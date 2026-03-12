@@ -45,6 +45,61 @@ function formatDate(iso: string): string {
     </div>
   </section>
 
+  <!-- MOT DU PRÉSIDENT -->
+  <section class="section" id="message">
+    <div class="container message-container">
+      <div class="section-header">
+        <h2>Mot du président</h2>
+      </div>
+      <div class="message-content">
+        <p>Chers membres,</p>
+        <p>L'assemblée générale annuelle est un moment fondamental dans la vie de notre syndicat. C'est l'occasion pour chaque membre de se prononcer sur les orientations qui guideront notre action collective au cours de la prochaine année.</p>
+        <p>Cette année, vous êtes appelés à vous prononcer sur le rapport annuel du conseil d'administration, sur une modification aux statuts concernant la durée des mandats, et à élire les personnes qui occuperont les postes de la présidence et de la trésorerie.</p>
+        <p>Chaque vote compte. Prenez le temps de consulter les documents mis à votre disposition et de lire les profils des candidats avant de faire vos choix. Le scrutin est ouvert pendant cinq jours pour vous permettre de voter au moment qui vous convient le mieux.</p>
+        <p class="message-signature">Marc-André Pelletier, président</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT VOTER -->
+  <section class="section section-alt" id="comment-voter">
+    <div class="container">
+      <div class="section-header">
+        <h2>Comment voter</h2>
+        <p>Le processus de vote se déroule en quelques étapes simples.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Consultez l'information</h3>
+          <p>Lisez les documents fournis et consultez les profils des candidats pour faire un choix éclairé.</p>
+        </div>
+        <div class="step-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Remplissez le bulletin</h3>
+          <p>Répondez à chaque question du bulletin. Vous pouvez réviser vos choix avant de soumettre.</p>
+        </div>
+        <div class="step-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Confirmez votre vote</h3>
+          <p>Soumettez votre bulletin et conservez votre numéro de confirmation comme preuve de participation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- VIDEO (si disponible) -->
   {scrutin.video && (
     <section class="section" id="video">
@@ -67,7 +122,7 @@ function formatDate(iso: string): string {
 
   <!-- DOCUMENTS -->
   {scrutin.documents.length > 0 && (
-    <section class="section section-alt" id="documents">
+    <section class="section" id="documents">
       <div class="container">
         <div class="section-header">
           <h2>Documents à consulter</h2>
@@ -104,28 +159,75 @@ function formatDate(iso: string): string {
 
   <!-- POSTES EN ÉLECTION (aperçu) -->
   {postes.length > 0 && (
-    <section class="section" id="elections">
+    <section class="section section-alt" id="elections">
       <div class="container">
         <div class="section-header">
           <h2>Postes en élection</h2>
           <p>Découvrez les candidats qui se présentent à chaque poste.</p>
         </div>
-        <div class="postes-grid">
+        <div class="postes-list">
           {postes.map(poste => (
-            <a href={`/candidats/${poste.id}`} class="poste-card card">
-              <h3>{poste.titre}</h3>
-              <p class="poste-candidats-count">
-                {poste.candidats.length} candidat{poste.candidats.length > 1 ? 's' : ''}
-              </p>
-              <span class="poste-link">
-                Voir les candidats →
-              </span>
-            </a>
+            <div class="poste-block">
+              <h3 class="poste-title">{poste.titre}</h3>
+              <div class="poste-candidats">
+                {poste.candidats.map(candidat => (
+                  <a href={`/candidats/${poste.id}/${candidat.id}`} class="candidat-preview card">
+                    <img src={candidat.photo} alt={candidat.nom} class="candidat-thumb" />
+                    <div class="candidat-preview-info">
+                      <span class="candidat-preview-name">{candidat.nom}</span>
+                      <span class="candidat-preview-titre">{candidat.titre}</span>
+                    </div>
+                    <span class="candidat-preview-arrow">→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
     </section>
   )}
+
+  <!-- CONFIDENTIALITÉ DU VOTE -->
+  <section class="section" id="securite">
+    <div class="container">
+      <div class="section-header">
+        <h2>Un vote sécurisé et confidentiel</h2>
+        <p>Le processus de vote en ligne respecte les plus hauts standards de sécurité.</p>
+      </div>
+      <div class="securite-grid">
+        <div class="securite-item">
+          <div class="securite-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <h3>Secret du vote garanti</h3>
+          <p>Votre identité et votre vote sont dissociés. Personne ne peut savoir comment vous avez voté, pas même les administrateurs du scrutin.</p>
+        </div>
+        <div class="securite-item">
+          <div class="securite-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3>Données chiffrées</h3>
+          <p>Toutes les communications entre votre appareil et nos serveurs sont chiffrées. Les bulletins sont stockés de manière sécurisée jusqu'au dépouillement.</p>
+        </div>
+        <div class="securite-item">
+          <div class="securite-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h3>Vote unique</h3>
+          <p>Chaque membre ne peut voter qu'une seule fois. Le système vérifie automatiquement votre admissibilité et empêche tout doublon.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- AIDE -->
   <section class="section section-alt" id="aide">
@@ -223,6 +325,68 @@ function formatDate(iso: string): string {
     color: #fff;
   }
 
+  /* MOT DU PRÉSIDENT */
+  .message-container {
+    max-width: 720px;
+  }
+
+  .message-content p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+
+  .message-signature {
+    margin-top: 1.5rem;
+    font-weight: 600;
+    color: var(--color-heading);
+    font-style: italic;
+  }
+
+  /* COMMENT VOTER */
+  .steps-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .step-card {
+    flex: 1;
+    max-width: 260px;
+    text-align: center;
+  }
+
+  .step-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+
+  .step-card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-card p {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  .step-arrow {
+    color: var(--color-border);
+    margin-top: 0.6rem;
+    flex-shrink: 0;
+  }
+
   /* VIDEO */
   .video-wrapper {
     position: relative;
@@ -297,39 +461,108 @@ function formatDate(iso: string): string {
   }
 
   /* POSTES */
-  .postes-grid {
+  .postes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .poste-title {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  .poste-candidats {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1rem;
   }
 
-  .poste-card {
+  .candidat-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     text-decoration: none;
     color: inherit;
+    transition: box-shadow var(--transition-soft), transform var(--transition-soft);
+  }
+
+  .candidat-preview:hover {
+    color: inherit;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .candidat-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .candidat-preview-info {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.15rem;
+    flex: 1;
   }
 
-  .poste-card:hover {
-    color: inherit;
+  .candidat-preview-name {
+    font-weight: 600;
+    color: var(--color-heading);
+    font-size: 1rem;
   }
 
-  .poste-card h3 {
-    font-size: 1.15rem;
-  }
-
-  .poste-candidats-count {
+  .candidat-preview-titre {
+    font-size: 0.85rem;
     color: var(--color-text-light);
-    font-size: 0.9rem;
   }
 
-  .poste-link {
-    margin-top: auto;
-    padding-top: 0.5rem;
+  .candidat-preview-arrow {
     color: var(--color-primary);
-    font-weight: 500;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  /* SÉCURITÉ */
+  .securite-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .securite-item {
+    text-align: center;
+  }
+
+  .securite-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+
+  .securite-item h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .securite-item p {
     font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.65;
   }
 
   /* AIDE */
@@ -370,8 +603,30 @@ function formatDate(iso: string): string {
       align-items: center;
     }
 
+    .steps-grid {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-card {
+      max-width: 100%;
+    }
+
+    .step-arrow {
+      transform: rotate(90deg);
+    }
+
     .documents-grid {
       grid-template-columns: 1fr;
+    }
+
+    .poste-candidats {
+      grid-template-columns: 1fr;
+    }
+
+    .securite-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
     }
 
     .aide-block {
