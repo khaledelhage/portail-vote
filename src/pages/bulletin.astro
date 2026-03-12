@@ -153,14 +153,6 @@ const { questions, postes } = election;
             </svg>
             <span>Copier le numéro</span>
           </button>
-          <button type="button" class="btn btn-outline" id="btn-pdf">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span>Télécharger en PDF</span>
-          </button>
         </div>
         <div class="email-block">
           <p class="email-label">Recevoir la confirmation par courriel</p>
@@ -417,50 +409,6 @@ const { questions, postes } = election;
   });
 
   // Télécharger en PDF
-  document.getElementById('btn-pdf')?.addEventListener('click', () => {
-    const confNum = document.getElementById('conf-number')?.textContent || '';
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('fr-CA', {
-      year: 'numeric', month: 'long', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Confirmation de vote</title>
-    <style>
-      body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 40px 50px; color: #1a1a2e; }
-      .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
-      .header h1 { font-size: 22px; margin: 0 0 4px; }
-      .header p { color: #64748b; font-size: 13px; margin: 0; }
-      .block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin: 24px 0; }
-      .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; margin-bottom: 6px; }
-      .value { font-size: 24px; font-weight: 700; font-family: monospace; color: #0f172a; }
-      .note { font-size: 13px; color: #64748b; margin-top: 24px; line-height: 1.6; }
-      .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; }
-    </style></head><body>
-      <div class="header">
-        <h1>Confirmation de vote</h1>
-        <p>${dateStr}</p>
-      </div>
-      <p>Votre vote a été enregistré avec succès. Voici votre numéro de confirmation :</p>
-      <div class="block">
-        <div class="label">Numéro de confirmation</div>
-        <div class="value">${confNum}</div>
-      </div>
-      <p class="note">Conservez ce document pour vos dossiers. Ce numéro vous permettra de confirmer que votre vote a bien été comptabilisé.</p>
-      <div class="footer">Propulsé par Votez.com</div>
-    </body></html>`;
-
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const printWindow = window.open(url, '_blank');
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.print();
-        URL.revokeObjectURL(url);
-      };
-    }
-  });
-
   // Initialisation
   updateProgress();
 </script>
