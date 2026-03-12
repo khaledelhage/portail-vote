@@ -1,0 +1,221 @@
+---
+import '../styles/global.css';
+import election from '../data/election.json';
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+const pageTitle = title
+  ? `${title} — ${election.scrutin.titre}`
+  : `${election.scrutin.titre} — ${election.organisation.nom}`;
+
+const navItems = [
+  { label: 'Accueil', href: '/' },
+  ...(election.postes.length > 0 ? [{ label: 'Candidats', href: '/candidats' }] : []),
+  { label: 'Voter', href: '/bulletin' },
+];
+---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={election.scrutin.description} />
+  <title>{pageTitle}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="header-brand">
+        <span class="header-org">{election.organisation.sigle}</span>
+      </a>
+
+      <nav class="header-nav" id="main-nav">
+        {navItems.map(item => (
+          <a href={item.href} class="nav-link">{item.label}</a>
+        ))}
+      </nav>
+
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-org">{election.organisation.nom}</p>
+      <p class="footer-contact">
+        {election.organisation.courriel} · {election.organisation.telephone}
+      </p>
+      <p class="footer-powered">Propulsé par <a href="https://votez.com" target="_blank" rel="noopener">Votez.com</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('main-nav');
+    toggle?.addEventListener('click', () => {
+      nav?.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+    // Fermer le menu quand on clique sur un lien
+    nav?.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        toggle?.classList.remove('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+<style is:global>
+  /* ===== HEADER ===== */
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-brand {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .header-org {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--color-heading);
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+  }
+
+  .nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-light);
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-heading);
+    padding: 0.5rem;
+  }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .footer-org {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: 0.35rem;
+  }
+
+  .footer-contact {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-powered {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+  }
+
+  .footer-powered a {
+    color: var(--color-primary);
+  }
+
+  /* ===== MOBILE NAV ===== */
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+
+    .header-nav {
+      display: none;
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      flex-direction: column;
+      padding: 0.5rem 1rem 1rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-nav.open {
+      display: flex;
+    }
+
+    .nav-link {
+      padding: 0.75rem 1rem;
+      font-size: 1.05rem;
+    }
+  }
+
+  /* Offset pour le header fixe */
+  main {
+    padding-top: 64px;
+  }
+</style>

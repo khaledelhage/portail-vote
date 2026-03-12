@@ -1,0 +1,387 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import election from '../data/election.json';
+
+const { scrutin, organisation, postes } = election;
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('fr-CA', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+---
+
+<BaseLayout>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="badge">{organisation.nom}</span>
+      <h1>{scrutin.titre}</h1>
+      <p class="hero-description">{scrutin.description}</p>
+
+      <div class="hero-dates">
+        <div class="date-item">
+          <span class="date-label">Ouverture du scrutin</span>
+          <span class="date-value">{formatDate(scrutin.dateOuverture)}</span>
+        </div>
+        <div class="date-item">
+          <span class="date-label">Fermeture du scrutin</span>
+          <span class="date-value">{formatDate(scrutin.dateFermeture)}</span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="/bulletin" class="btn btn-primary btn-lg">Voter maintenant</a>
+        {postes.length > 0 && (
+          <a href="/candidats" class="btn btn-outline btn-lg">Voir les candidats</a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO (si disponible) -->
+  {scrutin.video && (
+    <section class="section" id="video">
+      <div class="container">
+        <div class="section-header">
+          <h2>Présentation du scrutin</h2>
+        </div>
+        <div class="video-wrapper">
+          <iframe
+            src={scrutin.video}
+            title="Vidéo de présentation"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- DOCUMENTS -->
+  {scrutin.documents.length > 0 && (
+    <section class="section section-alt" id="documents">
+      <div class="container">
+        <div class="section-header">
+          <h2>Documents à consulter</h2>
+          <p>Prenez connaissance des documents avant de voter.</p>
+        </div>
+        <div class="documents-grid">
+          {scrutin.documents.map(doc => (
+            <a href={doc.fichier} target="_blank" rel="noopener" class="document-card card">
+              <div class="doc-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+              </div>
+              <div class="doc-content">
+                <h3>{doc.titre}</h3>
+                <p>{doc.description}</p>
+              </div>
+              <div class="doc-download">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- POSTES EN ÉLECTION (aperçu) -->
+  {postes.length > 0 && (
+    <section class="section" id="elections">
+      <div class="container">
+        <div class="section-header">
+          <h2>Postes en élection</h2>
+          <p>Découvrez les candidats qui se présentent à chaque poste.</p>
+        </div>
+        <div class="postes-grid">
+          {postes.map(poste => (
+            <a href={`/candidats/${poste.id}`} class="poste-card card">
+              <h3>{poste.titre}</h3>
+              <p class="poste-candidats-count">
+                {poste.candidats.length} candidat{poste.candidats.length > 1 ? 's' : ''}
+              </p>
+              <span class="poste-link">
+                Voir les candidats →
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- AIDE -->
+  <section class="section section-alt" id="aide">
+    <div class="container">
+      <div class="aide-block">
+        <div class="aide-content">
+          <h2>Besoin d'aide?</h2>
+          <p>Pour toute question concernant le scrutin ou le processus de vote, contactez le support.</p>
+        </div>
+        <div class="aide-contact">
+          <a href={`mailto:${organisation.courriel}`} class="btn btn-outline">{organisation.courriel}</a>
+          <a href={`tel:${organisation.telephone.replace(/[^+\d]/g, '')}`} class="btn btn-outline">{organisation.telephone}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .hero {
+    background: var(--color-bg-dark);
+    padding: 7rem 1.5rem 5rem;
+    text-align: center;
+  }
+
+  .hero-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero .badge {
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 {
+    color: var(--color-text-on-dark);
+    margin-bottom: 1rem;
+    font-size: 2.4rem;
+  }
+
+  .hero-description {
+    color: var(--color-text-on-dark);
+    opacity: 0.85;
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-dates {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .date-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .date-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-on-dark);
+    opacity: 0.6;
+    font-weight: 600;
+  }
+
+  .date-value {
+    color: var(--color-text-on-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-actions .btn-outline {
+    color: var(--color-text-on-dark);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .hero-actions .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+  }
+
+  /* VIDEO */
+  .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-dark);
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* DOCUMENTS */
+  .documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+  }
+
+  .document-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .document-card:hover {
+    color: inherit;
+  }
+
+  .doc-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-light);
+    border-radius: var(--radius);
+    color: var(--color-primary);
+  }
+
+  .doc-content {
+    flex: 1;
+  }
+
+  .doc-content h3 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .doc-content p {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+  }
+
+  .doc-download {
+    flex-shrink: 0;
+    color: var(--color-text-light);
+    transition: color var(--transition);
+  }
+
+  .document-card:hover .doc-download {
+    color: var(--color-primary);
+  }
+
+  /* POSTES */
+  .postes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .poste-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .poste-card:hover {
+    color: inherit;
+  }
+
+  .poste-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .poste-candidats-count {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+  }
+
+  .poste-link {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  /* AIDE */
+  .aide-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .aide-content h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .aide-content p {
+    color: var(--color-text-light);
+  }
+
+  .aide-contact {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 6rem 1.25rem 4rem;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+    }
+
+    .hero-dates {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .documents-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .aide-block {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .aide-contact {
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+</style>

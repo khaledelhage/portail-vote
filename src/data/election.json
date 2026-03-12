@@ -1,0 +1,113 @@
+{
+  "organisation": {
+    "nom": "Syndicat des employés professionnels",
+    "sigle": "SEP",
+    "logo": "/images/logo.png",
+    "courriel": "info@syndicat-exemple.com",
+    "telephone": "1-800-555-0199"
+  },
+  "scrutin": {
+    "titre": "Assemblée générale annuelle 2026",
+    "description": "Votez pour élire vos représentants et vous prononcer sur les résolutions soumises par le conseil d'administration.",
+    "dateOuverture": "2026-03-20T08:00:00",
+    "dateFermeture": "2026-03-25T17:00:00",
+    "video": "",
+    "documents": [
+      {
+        "titre": "Guide de l'électeur",
+        "description": "Tout ce que vous devez savoir avant de voter.",
+        "fichier": "/documents/guide-electeur.pdf"
+      },
+      {
+        "titre": "Ordre du jour",
+        "description": "Les points soumis au vote lors de cette assemblée.",
+        "fichier": "/documents/ordre-du-jour.pdf"
+      }
+    ]
+  },
+  "postes": [
+    {
+      "id": "presidence",
+      "titre": "Présidence",
+      "description": "Élisez la personne qui présidera le syndicat pour le prochain mandat de deux ans.",
+      "candidats": [
+        {
+          "id": "marie-tremblay",
+          "nom": "Marie Tremblay",
+          "titre": "Vice-présidente sortante",
+          "photo": "/images/candidats/marie-tremblay.jpg",
+          "presentation": "Marie Tremblay est impliquée dans le mouvement syndical depuis 15 ans. Elle a occupé le poste de vice-présidente au cours des quatre dernières années et souhaite maintenant mettre son expérience au service de la présidence.",
+          "contenu": "<h3>Parcours</h3><p>Marie Tremblay œuvre dans le milieu syndical depuis maintenant quinze ans. Diplômée en relations industrielles de l'Université Laval, elle a d'abord travaillé comme conseillère en ressources humaines pendant cinq ans avant de s'engager pleinement dans la vie syndicale. Son parcours l'a amenée à occuper plusieurs fonctions au sein du syndicat, passant de déléguée de section à secrétaire du comité exécutif, puis au poste de vice-présidente qu'elle occupe depuis quatre ans.</p><p>Au fil de ces années, Marie a développé une connaissance approfondie des enjeux qui touchent les membres. Elle a participé à trois rondes de négociation de la convention collective et a siégé sur de nombreux comités paritaires, notamment le comité de santé et sécurité au travail et le comité de relations de travail.</p><h3>Programme</h3><p>Le programme de Marie repose sur trois piliers fondamentaux :</p><ul><li>La transparence dans la gouvernance du syndicat, avec la mise en place de rapports trimestriels accessibles à tous les membres et la tenue d'assemblées d'information régulières dans toutes les régions.</li><li>Le renforcement de la communication avec les membres grâce à la modernisation des outils numériques du syndicat, incluant une application mobile pour faciliter les échanges et la diffusion d'information en temps réel.</li><li>L'amélioration des conditions de travail, en mettant l'accent sur la conciliation travail-famille, la santé mentale en milieu de travail et l'équité salariale entre les différentes catégories d'emploi.</li></ul><h3>Vision</h3><p>Marie croit fermement que la force d'un syndicat repose sur l'engagement de ses membres. Sa vision pour les deux prochaines années est celle d'un syndicat plus inclusif, plus accessible et plus à l'écoute. Elle souhaite mettre en place des mécanismes de consultation permanents pour que chaque membre puisse faire entendre sa voix sur les décisions qui le concernent.</p><p>Elle propose également de créer un fonds de formation continue pour permettre aux membres de développer leurs compétences professionnelles, et de renforcer les partenariats avec d'autres organisations syndicales afin de partager les meilleures pratiques et de porter une voix collective plus forte auprès des employeurs et des instances gouvernementales.</p>",
+          "video": "",
+          "reseaux": {
+            "facebook": "",
+            "linkedin": ""
+          }
+        },
+        {
+          "id": "jean-lavoie",
+          "nom": "Jean Lavoie",
+          "titre": "Délégué régional",
+          "photo": "/images/candidats/jean-lavoie.jpg",
+          "presentation": "Jean Lavoie est délégué régional depuis huit ans. Il connaît bien les réalités du terrain et propose un programme axé sur la proximité avec les membres et la modernisation des services.",
+          "contenu": "<h3>Parcours</h3><p>Jean Lavoie représente les membres de la région de la Capitale-Nationale depuis huit ans en tant que délégué régional. Technicien de formation, il travaille dans le secteur public depuis plus de vingt ans. Son engagement syndical a débuté sur le plancher, lorsqu'il a constaté des inégalités dans l'application de la convention collective entre les différentes régions.</p><p>Cette expérience de terrain lui a donné une perspective unique sur les défis quotidiens des membres. Jean a piloté plusieurs dossiers de griefs complexes avec succès et a contribué à la résolution de conflits majeurs dans sa région. Il a également été formateur pour les nouveaux délégués syndicaux, partageant son expertise avec la relève.</p><h3>Programme</h3><p>Le programme de Jean s'articule autour de quatre axes prioritaires :</p><ul><li>La proximité avec les membres, en instaurant des tournées régionales mensuelles et des permanences dans chaque bureau régional. Jean veut un syndicat qui va vers ses membres plutôt que d'attendre qu'ils viennent à lui.</li><li>La négociation proactive, en préparant dès maintenant la prochaine ronde de négociation avec une consultation élargie des membres sur leurs priorités. Jean souhaite que le cahier de demandes reflète véritablement les besoins exprimés par la base.</li><li>La modernisation des services syndicaux, avec la mise en place d'un portail en ligne permettant aux membres de suivre l'évolution de leurs dossiers, de consulter leurs droits et de communiquer directement avec leur représentant.</li><li>Le soutien aux membres vulnérables, en créant un programme d'accompagnement pour les employés qui vivent des situations difficiles au travail, que ce soit du harcèlement, de l'épuisement professionnel ou des problèmes d'accommodement.</li></ul><h3>Vision</h3><p>Jean est convaincu que le syndicat doit redevenir un acteur de premier plan dans la vie professionnelle de chaque membre. Sa vision est celle d'un syndicat de terrain, ancré dans les réalités quotidiennes, qui ne se contente pas de réagir aux problèmes mais qui les anticipe.</p><p>Il propose de mettre sur pied un observatoire des conditions de travail, alimenté par des sondages réguliers auprès des membres, pour identifier les tendances émergentes et adapter l'action syndicale en conséquence. Jean veut aussi renforcer la solidarité entre les régions en organisant des rencontres inter-régionales thématiques sur les enjeux communs.</p>",
+          "video": "",
+          "reseaux": {
+            "facebook": "",
+            "linkedin": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "tresorerie",
+      "titre": "Trésorerie",
+      "description": "Élisez la personne responsable de la gestion financière du syndicat.",
+      "candidats": [
+        {
+          "id": "sophie-gagnon",
+          "nom": "Sophie Gagnon",
+          "titre": "Comptable agréée",
+          "photo": "/images/candidats/sophie-gagnon.jpg",
+          "presentation": "Sophie Gagnon est comptable professionnelle agréée avec plus de 20 ans d'expérience. Elle propose une gestion rigoureuse et transparente des finances du syndicat.",
+          "contenu": "<h3>Parcours</h3><p>Sophie Gagnon détient le titre de comptable professionnelle agréée depuis plus de vingt ans. Après avoir obtenu son baccalauréat en sciences comptables de HEC Montréal, elle a travaillé en cabinet pendant dix ans, où elle a acquis une expertise en vérification et en planification financière pour des organismes à but non lucratif et des associations professionnelles.</p><p>Membre du syndicat depuis quinze ans, Sophie a siégé au comité de vérification pendant six ans. Elle a réalisé plusieurs analyses financières qui ont permis d'identifier des économies significatives dans la gestion courante du syndicat. Son expertise a été sollicitée lors de la dernière ronde de négociation pour évaluer les implications financières des propositions patronales.</p><h3>Programme</h3><p>Sophie propose un programme de gestion financière fondé sur trois principes :</p><ul><li>La rigueur budgétaire, avec l'implantation d'un processus budgétaire participatif où les membres pourront se prononcer sur les grandes orientations de dépenses. Sophie veut que chaque dollar de cotisation soit utilisé de manière optimale et justifiable.</li><li>La transparence totale, en publiant des états financiers trimestriels vulgarisés et accessibles à tous les membres, accompagnés d'analyses comparatives d'une année à l'autre. Elle prévoit aussi la mise en place d'un tableau de bord financier en ligne consultable en tout temps.</li><li>La planification à long terme, en constituant des réserves stratégiques pour faire face aux imprévus, qu'il s'agisse d'une grève, d'un recours juridique majeur ou d'une crise imprévue. Sophie veut s'assurer que le syndicat dispose toujours des moyens financiers nécessaires pour défendre ses membres.</li></ul><h3>Vision</h3><p>Sophie est convaincue qu'une gestion financière exemplaire est le fondement de la crédibilité d'un syndicat. Sa vision est celle d'une trésorerie moderne, outillée et proactive, qui ne se contente pas de comptabiliser les revenus et les dépenses mais qui contribue activement à la prise de décision stratégique.</p><p>Elle propose de réaliser un audit complet des finances du syndicat dans les premiers mois de son mandat et de présenter un plan de redressement ou de consolidation selon les résultats. Sophie veut également explorer de nouvelles sources de revenus pour le syndicat, comme des partenariats avec des fournisseurs de services pour offrir des avantages exclusifs aux membres.</p>",
+          "video": "",
+          "reseaux": {
+            "facebook": "",
+            "linkedin": ""
+          }
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "oui-non",
+      "titre": "Adoption du rapport annuel",
+      "description": "Acceptez-vous le rapport annuel du conseil d'administration pour l'exercice 2025-2026?",
+      "choix": ["Pour", "Contre"]
+    },
+    {
+      "id": "q2",
+      "type": "oui-non",
+      "titre": "Modification des statuts",
+      "description": "Acceptez-vous la modification proposée à l'article 12 des statuts concernant la durée des mandats des membres du conseil d'administration?",
+      "choix": ["Pour", "Contre"]
+    },
+    {
+      "id": "presidence",
+      "type": "election",
+      "titre": "Élection à la présidence",
+      "description": "Choisissez la personne que vous souhaitez élire à la présidence du syndicat.",
+      "posteId": "presidence"
+    },
+    {
+      "id": "tresorerie",
+      "type": "election",
+      "titre": "Élection à la trésorerie",
+      "description": "Choisissez la personne que vous souhaitez élire à la trésorerie du syndicat.",
+      "posteId": "tresorerie"
+    }
+  ]
+}

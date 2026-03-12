@@ -1,0 +1,858 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import election from '../data/election.json';
+
+const { questions, postes } = election;
+---
+
+<BaseLayout title="Bulletin de vote">
+
+  <section class="page-header">
+    <div class="container">
+      <h1>Bulletin de vote</h1>
+      <p>{election.scrutin.titre}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container ballot-container">
+
+      <!-- Indicateur de progression -->
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-text" id="progress-text"></p>
+
+      <!-- Questions du bulletin -->
+      <form id="ballot-form" novalidate>
+
+        {questions.map((question, index) => {
+          const poste = question.type === 'election'
+            ? postes.find(p => p.id === question.posteId)
+            : null;
+
+          return (
+            <div
+              class="question-step"
+              data-step={index}
+              data-question-id={question.id}
+              style={index > 0 ? 'display: none;' : ''}
+            >
+              <div class="question-number">Question {index + 1} de {questions.length}</div>
+              <h2 class="question-title">{question.titre}</h2>
+              <p class="question-description">{question.description}</p>
+
+              <div class="choice-group" role="radiogroup" aria-label={question.titre}>
+                {question.type === 'oui-non' && question.choix?.map(choix => (
+                  <label class="choice-option">
+                    <input
+                      type="radio"
+                      name={question.id}
+                      value={choix}
+                    />
+                    <span class="choice-label">{choix}</span>
+                  </label>
+                ))}
+
+                {question.type === 'election' && poste?.candidats.map(candidat => (
+                  <label class="choice-option choice-candidat">
+                    <input
+                      type="radio"
+                      name={question.id}
+                      value={candidat.id}
+                    />
+                    <img src={candidat.photo} alt={candidat.nom} class="choice-photo" />
+                    <div class="choice-candidat-info">
+                      <span class="choice-label">{candidat.nom}</span>
+                      <span class="choice-sublabel">{candidat.titre}</span>
+                    </div>
+                  </label>
+                ))}
+
+                <label class="choice-option choice-abstention">
+                  <input
+                    type="radio"
+                    name={question.id}
+                    value="abstention"
+                  />
+                  <span class="choice-label">Abstention</span>
+                </label>
+              </div>
+
+              <div class="step-actions">
+                {index > 0 && (
+                  <button type="button" class="btn btn-outline btn-prev" data-prev>
+                    ← Précédent
+                  </button>
+                )}
+                {index < questions.length - 1 ? (
+                  <button type="button" class="btn btn-primary btn-next" data-next disabled>
+                    Suivant →
+                  </button>
+                ) : (
+                  <button type="button" class="btn btn-primary btn-next" id="btn-review" data-review disabled>
+                    Réviser mes choix
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        <!-- Page de révision -->
+        <div class="question-step review-step" data-step="review" style="display: none;">
+          <h2 class="question-title">Révision de vos choix</h2>
+          <p class="question-description">Vérifiez vos réponses avant de soumettre votre vote. Vous pouvez modifier un choix en cliquant sur "Modifier".</p>
+
+          <div class="review-list" id="review-list"></div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-outline" id="btn-back-to-last">
+              ← Retour
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" id="btn-submit">
+              Soumettre mon vote
+            </button>
+          </div>
+        </div>
+
+        <!-- Confirmation de soumission (modale) -->
+        <div class="modal-overlay" id="confirm-modal" style="display: none;">
+          <div class="modal-content">
+            <h3>Confirmer la soumission</h3>
+            <p>Êtes-vous certain de vouloir soumettre votre vote? Cette action est irréversible.</p>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-outline" id="btn-cancel">Annuler</button>
+              <button type="button" class="btn btn-primary" id="btn-confirm">Oui, soumettre mon vote</button>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Page de confirmation -->
+      <div class="confirmation-step" id="confirmation-step" style="display: none;">
+        <div class="confirmation-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </div>
+        <h2>Vote enregistré</h2>
+        <p class="confirmation-text">Votre vote a été soumis avec succès. Merci pour votre participation.</p>
+        <div class="confirmation-number">
+          <span class="conf-label">Numéro de confirmation</span>
+          <span class="conf-value" id="conf-number"></span>
+        </div>
+        <p class="confirmation-note">Conservez ce numéro pour vos dossiers.</p>
+        <div class="confirmation-actions">
+          <button type="button" class="btn btn-primary" id="btn-copy">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <span>Copier le numéro</span>
+          </button>
+          <button type="button" class="btn btn-outline" id="btn-pdf">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Télécharger en PDF</span>
+          </button>
+        </div>
+        <div class="email-block">
+          <p class="email-label">Recevoir la confirmation par courriel</p>
+          <div class="email-form" id="email-form">
+            <input
+              type="email"
+              id="email-input"
+              placeholder="votre@courriel.com"
+              autocomplete="email"
+            />
+            <button type="button" class="btn btn-primary" id="btn-email">
+              Envoyer
+            </button>
+          </div>
+          <p class="email-feedback" id="email-feedback"></p>
+        </div>
+
+        <a href="/" class="btn-back-home">Retour à l'accueil</a>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('ballot-form') as HTMLFormElement;
+  const steps = document.querySelectorAll('.question-step') as NodeListOf<HTMLElement>;
+  const reviewStep = document.querySelector('[data-step="review"]') as HTMLElement;
+  const confirmationStep = document.getElementById('confirmation-step') as HTMLElement;
+  const progressFill = document.getElementById('progress-fill') as HTMLElement;
+  const progressText = document.getElementById('progress-text') as HTMLElement;
+  const progressBar = document.getElementById('progress-bar') as HTMLElement;
+
+  let currentStep = 0;
+  const totalQuestions = steps.length - 1; // Exclure la page de révision
+
+  // Données des questions (injectées depuis Astro)
+  const questionsData = JSON.parse(document.getElementById('ballot-form')?.dataset.questions || '[]');
+
+  function updateProgress() {
+    const pct = ((currentStep + 1) / totalQuestions) * 100;
+    progressFill.style.width = `${Math.min(pct, 100)}%`;
+    progressText.textContent = `Question ${Math.min(currentStep + 1, totalQuestions)} de ${totalQuestions}`;
+  }
+
+  function showStep(index: number | 'review') {
+    steps.forEach(s => s.style.display = 'none');
+
+    if (index === 'review') {
+      reviewStep.style.display = '';
+      progressBar.style.display = 'none';
+      progressText.style.display = 'none';
+      buildReview();
+    } else {
+      const step = document.querySelector(`[data-step="${index}"]`) as HTMLElement;
+      if (step) step.style.display = '';
+      currentStep = index;
+      progressBar.style.display = '';
+      progressText.style.display = '';
+      updateProgress();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Activer/désactiver le bouton Suivant selon la sélection
+  form.addEventListener('change', (e) => {
+    const target = e.target as HTMLInputElement;
+    const step = target.closest('.question-step') as HTMLElement;
+    if (!step) return;
+
+    const nextBtn = step.querySelector('[data-next], [data-review]') as HTMLButtonElement;
+    if (nextBtn) {
+      nextBtn.disabled = false;
+    }
+
+    // Marquer visuellement le choix sélectionné
+    step.querySelectorAll('.choice-option').forEach(opt => opt.classList.remove('selected'));
+    const label = target.closest('.choice-option');
+    if (label) label.classList.add('selected');
+  });
+
+  // Navigation : Suivant
+  document.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showStep(currentStep + 1);
+    });
+  });
+
+  // Navigation : Précédent
+  document.querySelectorAll('[data-prev]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showStep(currentStep - 1);
+    });
+  });
+
+  // Réviser
+  document.getElementById('btn-review')?.addEventListener('click', () => {
+    showStep('review');
+  });
+
+  // Retour depuis la révision
+  document.getElementById('btn-back-to-last')?.addEventListener('click', () => {
+    showStep(totalQuestions - 1);
+  });
+
+  // Construire la page de révision
+  function buildReview() {
+    const reviewList = document.getElementById('review-list') as HTMLElement;
+    reviewList.innerHTML = '';
+
+    const questionSteps = document.querySelectorAll('.question-step:not(.review-step)') as NodeListOf<HTMLElement>;
+
+    questionSteps.forEach((step, index) => {
+      const questionId = step.dataset.questionId;
+      const title = step.querySelector('.question-title')?.textContent || '';
+      const selected = form.querySelector(`input[name="${questionId}"]:checked`) as HTMLInputElement;
+
+      const item = document.createElement('div');
+      item.className = 'review-item';
+
+      const isAbstention = selected?.value === 'abstention';
+      const choiceLabel = selected
+        ? (selected.closest('.choice-option')?.querySelector('.choice-label')?.textContent || selected.value)
+        : 'Aucun choix';
+
+      // Chercher la photo du candidat si c'est une élection
+      const photoEl = selected?.closest('.choice-option')?.querySelector('.choice-photo') as HTMLImageElement | null;
+      const photoHtml = photoEl ? `<img src="${photoEl.src}" alt="" class="review-photo" />` : '';
+
+      const statusClass = !selected ? 'review-empty' : isAbstention ? 'review-abstention' : 'review-chosen';
+
+      item.innerHTML = `
+        <div class="review-top">
+          <span class="review-q-title">${title}</span>
+          <button type="button" class="review-edit" data-goto="${index}">Modifier</button>
+        </div>
+        <div class="review-answer ${statusClass}">
+          ${photoHtml}
+          <span class="review-choice-label">${choiceLabel}</span>
+        </div>
+      `;
+
+      reviewList.appendChild(item);
+    });
+
+    // Boutons Modifier
+    reviewList.querySelectorAll('.review-edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const goto = parseInt(target.dataset.goto || '0');
+        showStep(goto);
+      });
+    });
+  }
+
+  // Soumission
+  document.getElementById('btn-submit')?.addEventListener('click', () => {
+    const modal = document.getElementById('confirm-modal') as HTMLElement;
+    modal.style.display = 'flex';
+  });
+
+  document.getElementById('btn-cancel')?.addEventListener('click', () => {
+    const modal = document.getElementById('confirm-modal') as HTMLElement;
+    modal.style.display = 'none';
+  });
+
+  document.getElementById('btn-confirm')?.addEventListener('click', () => {
+    const modal = document.getElementById('confirm-modal') as HTMLElement;
+    modal.style.display = 'none';
+
+    // Générer un numéro de confirmation
+    const confNum = 'V-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const confNumberEl = document.getElementById('conf-number');
+    if (confNumberEl) confNumberEl.textContent = confNum;
+
+    // Masquer le formulaire, afficher la confirmation
+    form.style.display = 'none';
+    progressBar.style.display = 'none';
+    progressText.style.display = 'none';
+    confirmationStep.style.display = '';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Envoyer par courriel
+  const scrutinTitle = document.querySelector('.page-header p')?.textContent || '';
+
+  document.getElementById('btn-email')?.addEventListener('click', async () => {
+    const input = document.getElementById('email-input') as HTMLInputElement;
+    const feedback = document.getElementById('email-feedback') as HTMLElement;
+    const btn = document.getElementById('btn-email') as HTMLButtonElement;
+    const confNum = document.getElementById('conf-number')?.textContent || '';
+    const courriel = input.value.trim();
+
+    if (!courriel) {
+      feedback.textContent = 'Veuillez entrer une adresse courriel.';
+      feedback.className = 'email-feedback error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi...';
+    feedback.textContent = '';
+
+    try {
+      const res = await fetch('/api/confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courriel, numero: confNum, scrutin: scrutinTitle }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        feedback.textContent = `Confirmation envoyée à ${courriel}`;
+        feedback.className = 'email-feedback success';
+        input.disabled = true;
+        btn.textContent = 'Envoyé';
+      } else {
+        feedback.textContent = data.error || "Erreur lors de l'envoi.";
+        feedback.className = 'email-feedback error';
+        btn.disabled = false;
+        btn.textContent = 'Envoyer';
+      }
+    } catch {
+      feedback.textContent = "Erreur de connexion. Réessayez.";
+      feedback.className = 'email-feedback error';
+      btn.disabled = false;
+      btn.textContent = 'Envoyer';
+    }
+  });
+
+  // Copier le numéro de confirmation
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    const confNum = document.getElementById('conf-number')?.textContent || '';
+    const btn = document.getElementById('btn-copy') as HTMLButtonElement;
+    const label = btn.querySelector('span') as HTMLSpanElement;
+    try {
+      await navigator.clipboard.writeText(confNum);
+      label.textContent = 'Copié!';
+      setTimeout(() => { label.textContent = 'Copier le numéro'; }, 2000);
+    } catch {
+      label.textContent = 'Erreur';
+      setTimeout(() => { label.textContent = 'Copier le numéro'; }, 2000);
+    }
+  });
+
+  // Télécharger en PDF
+  document.getElementById('btn-pdf')?.addEventListener('click', () => {
+    const confNum = document.getElementById('conf-number')?.textContent || '';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-CA', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Confirmation de vote</title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 40px 50px; color: #1a1a2e; }
+      .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+      .header h1 { font-size: 22px; margin: 0 0 4px; }
+      .header p { color: #64748b; font-size: 13px; margin: 0; }
+      .block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin: 24px 0; }
+      .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; margin-bottom: 6px; }
+      .value { font-size: 24px; font-weight: 700; font-family: monospace; color: #0f172a; }
+      .note { font-size: 13px; color: #64748b; margin-top: 24px; line-height: 1.6; }
+      .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; }
+    </style></head><body>
+      <div class="header">
+        <h1>Confirmation de vote</h1>
+        <p>${dateStr}</p>
+      </div>
+      <p>Votre vote a été enregistré avec succès. Voici votre numéro de confirmation :</p>
+      <div class="block">
+        <div class="label">Numéro de confirmation</div>
+        <div class="value">${confNum}</div>
+      </div>
+      <p class="note">Conservez ce document pour vos dossiers. Ce numéro vous permettra de confirmer que votre vote a bien été comptabilisé.</p>
+      <div class="footer">Propulsé par Votez.com</div>
+    </body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+        URL.revokeObjectURL(url);
+      };
+    }
+  });
+
+  // Initialisation
+  updateProgress();
+</script>
+
+<style>
+  .page-header {
+    background: var(--color-bg-dark);
+    padding: 6rem 1.5rem 3rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    color: var(--color-text-on-dark);
+    margin-bottom: 0.3rem;
+  }
+
+  .page-header p {
+    color: var(--color-text-on-dark);
+    opacity: 0.8;
+  }
+
+  .ballot-container {
+    max-width: 640px;
+  }
+
+  /* PROGRESSION */
+  .progress-bar {
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  /* QUESTIONS */
+  .question-number {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-light);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .question-title {
+    margin-bottom: 0.5rem;
+  }
+
+  .question-description {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .choice-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .choice-abstention {
+    border-style: dashed;
+    opacity: 0.7;
+  }
+
+  .choice-abstention:hover,
+  .choice-abstention.selected {
+    opacity: 1;
+  }
+
+  .choice-abstention .choice-label {
+    font-style: italic;
+    color: var(--color-text-light);
+  }
+
+  .choice-candidat .choice-candidat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .step-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    gap: 1rem;
+  }
+
+  .step-actions .btn-next,
+  .step-actions #btn-review {
+    margin-left: auto;
+  }
+
+  /* RÉVISION */
+  .review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .review-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: box-shadow var(--transition);
+  }
+
+  .review-item:hover {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .review-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .review-q-title {
+    font-weight: 600;
+    color: var(--color-heading);
+    font-size: 0.95rem;
+  }
+
+  .review-answer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    background: var(--color-primary-light);
+  }
+
+  .review-answer.review-chosen {
+    background: var(--color-primary-light);
+  }
+
+  .review-answer.review-abstention {
+    background: var(--color-bg-alt);
+  }
+
+  .review-answer.review-empty {
+    background: var(--color-error-light);
+  }
+
+  .review-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .review-choice-label {
+    font-weight: 600;
+    color: var(--color-heading);
+    font-size: 1rem;
+  }
+
+  .review-abstention .review-choice-label {
+    font-style: italic;
+    color: var(--color-text-light);
+    font-weight: 500;
+  }
+
+  .review-empty .review-choice-label {
+    color: var(--color-error);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .review-edit {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    transition: background var(--transition);
+  }
+
+  .review-edit:hover {
+    background: var(--color-primary-light);
+  }
+
+  /* MODALE */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1.5rem;
+  }
+
+  .modal-content {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-content h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .modal-content p {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  /* CONFIRMATION */
+  .confirmation-step {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .confirmation-icon {
+    color: var(--color-success);
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmation-step h2 {
+    margin-bottom: 0.75rem;
+  }
+
+  .confirmation-text {
+    color: var(--color-text-light);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+
+  .confirmation-number {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.25rem 2rem;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+  }
+
+  .conf-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-light);
+    font-weight: 600;
+  }
+
+  .conf-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-heading);
+    font-family: monospace;
+  }
+
+  .confirmation-note {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .confirmation-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .email-block {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .email-label {
+    font-weight: 600;
+    color: var(--color-heading);
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .email-form {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .email-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: var(--font-body);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-width: 0;
+  }
+
+  .email-form input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .email-form .btn {
+    flex-shrink: 0;
+  }
+
+  .email-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+  }
+
+  .email-feedback.success {
+    color: var(--color-success);
+  }
+
+  .email-feedback.error {
+    color: var(--color-error);
+  }
+
+  .btn-back-home {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  .btn-back-home:hover {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 5rem 1.25rem 2.5rem;
+    }
+
+    .review-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .step-actions {
+      flex-direction: column-reverse;
+    }
+
+    .step-actions .btn {
+      width: 100%;
+    }
+
+    .step-actions .btn-next,
+    .step-actions #btn-review {
+      margin-left: 0;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+  }
+</style>
